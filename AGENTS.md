@@ -49,3 +49,25 @@ El agente debe ejecutar de forma interactiva y secuencial:
 3. **Desarrollar Inside-Out (De dentro hacia afuera):** No tocar la UI ni React hasta que el modelo de dominio y los casos de uso estén completamente implementados y probados mediante Vitest.
 4. **Acoplar UI e Infraestructura:** Conectar los adaptadores en la interfaz y asociar Zustand.
 5. **Verificar Calidad:** Ejecutar `npm run type-check`, `npm run lint` y `npm run test` antes de reportar la tarea como completada.
+
+---
+
+## 5. Mapa de Comandos por Intención
+
+Cuando el usuario exprese una necesidad, delega en el subagente especializado correspondiente:
+
+| Intención del usuario | Comando a ejecutar | Subagente |
+|---|---|---|
+| Crear un **componente React** (no cualquier archivo) | `create-react-component` | `@create-react-component` |
+| Revisar/auditar un componente React existente | `react-review` | `@react-review` |
+| Revisar cambios de código (pull + locales) | `review` | `@code-review` |
+| Sincronizar repo con remoto (pull/commit/push) | `git-sync` | `@git-sync` |
+
+### Reglas de dispatch
+
+1. **Si el usuario pide crear un componente React** → ejecuta `create-react-component`.
+2. **Si el usuario pide crear cualquier otra cosa** (no un componente React) → hazlo directamente sin invocar subagentes.
+3. **Si el usuario pide revisar un componente React** → ejecuta `react-review`.
+4. **Si el usuario pide revisar código general** → ejecuta `review`.
+5. **Si el usuario pide sincronizar git** → ejecuta `git-sync`.
+6. **Después de cualquier cambio en el código** → ejecutar `type-check && lint && test`.
