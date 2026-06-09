@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, type FC, type ReactNode } from 'react';
 import type { CounterRepository } from '../../domain/ports/CounterRepository';
 

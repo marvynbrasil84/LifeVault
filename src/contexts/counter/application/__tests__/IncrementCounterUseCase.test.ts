@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { IncrementCounterUseCase } from '../../../application/use-cases/IncrementCounterUseCase';
-import type { CounterRepository } from '../../../domain/ports/CounterRepository';
+import { IncrementCounterUseCase } from '../use-cases/IncrementCounterUseCase';
+import type { CounterRepository } from '../../domain/ports/CounterRepository';
 
 describe('IncrementCounterUseCase', () => {
   it('debe incrementar el valor del contador y guardarlo', async () => {

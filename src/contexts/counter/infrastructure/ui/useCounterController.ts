@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useCounterDependencies } from '../di/CounterDependencyContext';
 import { useCounterStore } from '../store/useCounterStore';
 import { IncrementCounterUseCase } from '../../application/use-cases/IncrementCounterUseCase';
@@ -6,51 +6,60 @@ import { DecrementCounterUseCase } from '../../application/use-cases/DecrementCo
 
 export function useCounterController() {
   const { counterRepository } = useCounterDependencies();
-  const { value, isLoading, setValue, setLoading } = useCounterStore();
+  const { value, isLoading, error, setValue, setLoading, setError } = useCounterStore();
 
-  const incrementUseCase = new IncrementCounterUseCase(counterRepository);
-  const decrementUseCase = new DecrementCounterUseCase(counterRepository);
+  const incrementUseCase = useMemo(
+    () => new IncrementCounterUseCase(counterRepository),
+    [counterRepository]
+  );
+  const decrementUseCase = useMemo(
+    () => new DecrementCounterUseCase(counterRepository),
+    [counterRepository]
+  );
 
   useEffect(() => {
     let active = true;
     const loadValue = async () => {
       setLoading(true);
+      setError(null);
       try {
         const val = await counterRepository.get();
         if (active) setValue(val);
       } catch (err) {
-        console.error(err);
+        if (active) setError(err instanceof Error ? err.message : 'Error al cargar');
       } finally {
         if (active) setLoading(false);
       }
     };
     loadValue();
     return () => { active = false; };
-  }, [counterRepository, setValue, setLoading]);
+  }, [counterRepository, setValue, setLoading, setError]);
 
-  const handleIncrement = async () => {
+  const handleIncrement = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const newValue = await incrementUseCase.execute();
       setValue(newValue);
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'Error al incrementar');
     } finally {
       setLoading(false);
     }
-  };
+  }, [incrementUseCase, setValue, setLoading, setError]);
 
-  const handleDecrement = async () => {
+  const handleDecrement = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const newValue = await decrementUseCase.execute();
       setValue(newValue);
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'Error al decrementar');
     } finally {
       setLoading(false);
     }
-  };
+  }, [decrementUseCase, setValue, setLoading, setError]);
 
-  return { value, isLoading, increment: handleIncrement, decrement: handleDecrement };
+  return { value, isLoading, error, increment: handleIncrement, decrement: handleDecrement };
 }

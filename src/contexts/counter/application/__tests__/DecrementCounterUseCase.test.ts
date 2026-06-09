@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { DecrementCounterUseCase } from '../../../application/use-cases/DecrementCounterUseCase';
-import type { CounterRepository } from '../../../domain/ports/CounterRepository';
+import { DecrementCounterUseCase } from '../use-cases/DecrementCounterUseCase';
+import type { CounterRepository } from '../../domain/ports/CounterRepository';
 
 describe('DecrementCounterUseCase', () => {
   it('debe decrementar el valor del contador y guardarlo', async () => {
